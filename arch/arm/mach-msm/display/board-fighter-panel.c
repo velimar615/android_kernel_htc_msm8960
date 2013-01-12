@@ -1796,7 +1796,7 @@ static unsigned char fighter_shrink_pwm(int val)
 
 static int bl_level_old;
 
-static void mipi_dsi_set_backlight(struct msm_fb_data_type *mfd)
+void mipi_dsi_set_backlight(struct msm_fb_data_type *mfd, int level)
 {
 	struct mipi_panel_info *mipi;
 
@@ -1817,10 +1817,8 @@ static void mipi_dsi_set_backlight(struct msm_fb_data_type *mfd)
 	}
 #endif
 
-	mdp4_dsi_cmd_dma_busy_wait(mfd);
-	mdp4_dsi_blt_dmap_busy_wait(mfd);
 	mipi_dsi_mdp_busy_wait(mfd);
-	mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_cmd_backlight_cmds,
+	mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_cmd_backlight_cmds,
 			ARRAY_SIZE(novatek_cmd_backlight_cmds));
 	bl_level_old = mfd->bl_level;
 	mutex_unlock(&mfd->dma->ov_mutex);
@@ -1843,46 +1841,46 @@ static int fighter_lcd_on(struct platform_device *pdev)
 	mipi  = &mfd->panel_info.mipi;
 
 	if (mipi->mode == DSI_VIDEO_MODE) {
-		mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_video_on_cmds,
+		mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_video_on_cmds,
 			ARRAY_SIZE(novatek_video_on_cmds));
 	} else {
 		if (!mipi_lcd_on) {
 			mipi_dsi_cmd_bta_sw_trigger(); /* clean up ack_err_status */
 			if (panel_type == PANEL_ID_FIGHTER_SAMSUNG_NT) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_SAMSUNG_NT\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_cmd_on_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_cmd_on_cmds,
 					ARRAY_SIZE(novatek_cmd_on_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_SAMSUNG_NT_C2) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_SAMSUNG_NT_C2\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_c2_cmd_on_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_c2_cmd_on_cmds,
 					ARRAY_SIZE(novatek_c2_cmd_on_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_SAMSUNG_NT_C3) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_SAMSUNG_NT_C3\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_c3_cmd_on_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_c3_cmd_on_cmds,
 					ARRAY_SIZE(novatek_c3_cmd_on_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_LG_NT) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_LG_NT\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, lg_novatek_cmd_on_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, lg_novatek_cmd_on_cmds,
 					ARRAY_SIZE(lg_novatek_cmd_on_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_LG_NT_C2) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_LG_NT_C2\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, lg_novatek_c2_cmd_on_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, lg_novatek_c2_cmd_on_cmds,
 					ARRAY_SIZE(lg_novatek_c2_cmd_on_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_LG_NT_MP) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_LG_NT_MP\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, lg_novatek_mp_cmd_on_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, lg_novatek_mp_cmd_on_cmds,
 					ARRAY_SIZE(lg_novatek_mp_cmd_on_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_SONY_OTM) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_SONY_OTM\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, sony_orise9608a_panel_cmd_mode_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, sony_orise9608a_panel_cmd_mode_cmds,
 					ARRAY_SIZE(sony_orise9608a_panel_cmd_mode_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_SONY_OTM_C1_1) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_SONY_OTM_C1_1\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, sony_orise9608a_c1_1_panel_cmd_mode_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, sony_orise9608a_c1_1_panel_cmd_mode_cmds,
 					ARRAY_SIZE(sony_orise9608a_c1_1_panel_cmd_mode_cmds));
 			} else if (panel_type == PANEL_ID_FIGHTER_SONY_OTM_MP) {
 				PR_DISP_INFO("fighter_lcd_on PANEL_ID_FIGHTER_SONY_OTM_MP\n");
-				mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, sony_orise9608a_mp_panel_cmd_mode_cmds,
+				mipi_dsi_cmds_tx(&fighter_panel_tx_buf, sony_orise9608a_mp_panel_cmd_mode_cmds,
 					ARRAY_SIZE(sony_orise9608a_mp_panel_cmd_mode_cmds));
 			}
 		}
@@ -1905,15 +1903,13 @@ static void fighter_display_on(struct msm_fb_data_type *mfd)
 	mutex_lock(&mfd->dma->ov_mutex);
 
 	if (mfd->panel_info.type == MIPI_CMD_PANEL) {
-		mdp4_dsi_cmd_dma_busy_wait(mfd);
-		mdp4_dsi_blt_dmap_busy_wait(mfd);
 		mipi_dsi_mdp_busy_wait(mfd);
 	}
 	if (isorise) {
-		mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, sony_orise9608a_panel_display_on,
+		mipi_dsi_cmds_tx(&fighter_panel_tx_buf, sony_orise9608a_panel_display_on,
 			ARRAY_SIZE(sony_orise9608a_panel_display_on));
 	} else {
-		mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_panel_display_on,
+		mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_panel_display_on,
 			ARRAY_SIZE(novatek_panel_display_on));
 	}
 
@@ -1936,10 +1932,10 @@ static int fighter_lcd_off(struct platform_device *pdev)
 	/* Remove mutex temporarily*/
 	/*mutex_lock(&mfd->dma->ov_mutex);*/
 	if (isorise) {
-		mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_display_off_cmds,
+		mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_display_off_cmds,
 				ARRAY_SIZE(novatek_display_off_cmds));
 	} else {
-		mipi_dsi_cmds_tx(mfd, &fighter_panel_tx_buf, novatek_display_off_lg_cmds,
+		mipi_dsi_cmds_tx(&fighter_panel_tx_buf, novatek_display_off_lg_cmds,
 				ARRAY_SIZE(novatek_display_off_lg_cmds));
 	}
 
@@ -1957,7 +1953,7 @@ static void fighter_set_backlight(struct msm_fb_data_type *mfd)
 	if (!mfd->panel_power_on)
 		return;
 
-	mipi_dsi_set_backlight(mfd);
+	mipi_dsi_set_backlight(mfd, 0);
 }
 
 static int __devinit fighter_lcd_probe(struct platform_device *pdev)
@@ -1986,7 +1982,6 @@ static struct msm_fb_panel_data novatek_panel_data = {
 	.on		= fighter_lcd_on,
 	.off		= fighter_lcd_off,
 	.set_backlight = fighter_set_backlight,
-	.display_on = fighter_display_on,
 };
 
 static int ch_used[3];
@@ -2079,8 +2074,6 @@ static int mipi_cmd_novatek_blue_qhd_pt_init(void)
 	pinfo.pdest = DISPLAY_1;
 	pinfo.wait_cycle = 0;
 	pinfo.bpp = 24;
-	pinfo.width = 49;
-	pinfo.height = 87;
 
 	pinfo.lcdc.h_back_porch = 64;
 	pinfo.lcdc.h_front_porch = 96;
